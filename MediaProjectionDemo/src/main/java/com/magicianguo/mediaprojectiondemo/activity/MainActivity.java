@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.magicianguo.mediaprojectiondemo.databinding.ActivityMainBinding;
 import com.magicianguo.mediaprojectiondemo.util.MediaProjectionHelper;
 import com.magicianguo.mediaprojectiondemo.util.NotificationHelper;
+import com.magicianguo.mediaprojectiondemo.util.WindowHelper;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
@@ -30,8 +31,15 @@ public class MainActivity extends AppCompatActivity {
         binding.btnStop.setOnClickListener(v -> {
             MediaProjectionHelper.stop();
         });
-        binding.btnScreenshot.setOnClickListener(v -> {
-            MediaProjectionHelper.screenshot();
+        binding.btnShowScreenshot.setOnClickListener(v -> {
+            if (WindowHelper.checkOverlay(this)) {
+                WindowHelper.showScreenshotView();
+            }
+        });
+        binding.btnHideScreenshot.setOnClickListener(v -> {
+            if (WindowHelper.checkOverlay(this)) {
+                WindowHelper.hideScreenshotView();
+            }
         });
     }
 

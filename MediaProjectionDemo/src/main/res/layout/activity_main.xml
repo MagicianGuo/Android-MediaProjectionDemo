@@ -5,21 +5,48 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
     tools:context=".activity.MainActivity">
-    <Button
-        android:id="@+id/btn_start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="启动服务" />
-    <Button
-        android:id="@+id/btn_stop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="停止服务" />
-    <Button
-        android:id="@+id/btn_screenshot"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="截图" />
+    <RelativeLayout
+        style="@style/Item">
+        <TextView
+            style="@style/ItemTitle"
+            android:text="屏幕录制服务" />
+        <Button
+            android:id="@+id/btn_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/btn_stop"
+            android:layout_marginEnd="5dp"
+            android:text="启动" />
+        <Button
+            android:id="@+id/btn_stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:text="停止" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        style="@style/Item">
+        <TextView
+            style="@style/ItemTitle"
+            android:text="截图弹窗" />
+        <Button
+            android:id="@+id/btn_show_screenshot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/btn_hide_screenshot"
+            android:layout_marginEnd="5dp"
+            android:text="显示" />
+        <Button
+            android:id="@+id/btn_hide_screenshot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:text="隐藏" />
+    </RelativeLayout>
 </LinearLayout>
