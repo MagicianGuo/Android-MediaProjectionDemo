@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.magicianguo.mediaprojectiondemo.R;
-import com.magicianguo.mediaprojectiondemo.util.MediaProjectionHelper;
+import com.magicianguo.mediaprojectiondemo.service.MediaProjectionService;
 import com.magicianguo.mediaprojectiondemo.util.TaskPool;
 
 public class ScreenshotView extends FrameLayout {
@@ -67,7 +67,7 @@ public class ScreenshotView extends FrameLayout {
                             TaskPool.CACHE.execute(() -> {
                                 try {
                                     Thread.sleep(200L);
-                                    TaskPool.MAIN.post(MediaProjectionHelper::screenshot);
+                                    TaskPool.MAIN.post(MediaProjectionService::screenshot);
                                     Thread.sleep(200L);
                                     TaskPool.MAIN.post(() -> ScreenshotView.this.setVisibility(VISIBLE));
                                 } catch (InterruptedException e) {

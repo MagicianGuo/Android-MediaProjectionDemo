@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
@@ -60,6 +61,10 @@ public class NotificationHelper {
             notificationBuilder.setChannelId(CHANNEL_ID_MEDIA_PROJECTION);
         }
         Notification notification = notificationBuilder.build();
-        service.startForeground(NOTIFICATION_ID_MEDIA_PROJECTION, notification);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            service.startForeground(NOTIFICATION_ID_MEDIA_PROJECTION, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
+        } else {
+            service.startForeground(NOTIFICATION_ID_MEDIA_PROJECTION, notification);
+        }
     }
 }
