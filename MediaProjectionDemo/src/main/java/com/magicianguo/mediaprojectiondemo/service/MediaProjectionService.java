@@ -77,11 +77,29 @@ public class MediaProjectionService extends Service {
         }
         try {
             Image image = mImageReader.acquireLatestImage();
-            Image.Plane plane = image.getPlanes()[0];
-            ByteBuffer buffer = plane.getBuffer();
-            Bitmap bitmap = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.ARGB_8888);
+
+            // 获取数据
+            int width = image.getWidth();
+            int height = image.getHeight();
+            final Image.Plane plane = image.getPlanes()[0];
+            final ByteBuffer buffer = plane.getBuffer();
+
+            // 重新计算Bitmap宽度，防止Bitmap显示错位
+            int pixelStride = plane.getPixelStride();
+            int rowStride = plane.getRowStride();
+            int rowPadding = rowStride - pixelStride * width;
+            int bitmapWidth = width + rowPadding / pixelStride;
+
+            // 创建Bitmap
+            Bitmap bitmap = Bitmap.createBitmap(bitmapWidth, height, Bitmap.Config.ARGB_8888);
             bitmap.copyPixelsFromBuffer(buffer);
+
+            // 释放资源
             image.close();
+
+            // 裁剪Bitmap，因为重新计算宽度原因，会导致Bitmap宽度偏大
+            Bitmap result = Bitmap.createBitmap(bitmap, 0, 0, width, height);
+            bitmap.recycle();
 
             String fileName = createScreenshotFileName();
             File file = new File(App.getApp().getExternalFilesDir(null).getParent(), fileName);
@@ -90,9 +108,9 @@ public class MediaProjectionService extends Service {
             }
             FileOutputStream fos = new FileOutputStream(file);
             BufferedOutputStream bos = new BufferedOutputStream(fos);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+            result.compress(Bitmap.CompressFormat.PNG, 100, bos);
             bos.close();
-            bitmap.recycle();
+            result.recycle();
             ToastUtils.longCall("截图成功！"+fileName);
         } catch (IOException e) {
             e.printStackTrace();
