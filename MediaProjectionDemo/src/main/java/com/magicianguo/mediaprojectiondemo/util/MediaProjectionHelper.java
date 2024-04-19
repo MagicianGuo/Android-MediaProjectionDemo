@@ -121,6 +121,7 @@ public class MediaProjectionHelper {
             ByteBuffer buffer = plane.getBuffer();
             Bitmap bitmap = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.ARGB_8888);
             bitmap.copyPixelsFromBuffer(buffer);
+            image.close();
 
             String fileName = createScreenshotFileName();
             File file = new File(App.getApp().getExternalFilesDir(null).getParent(), fileName);
