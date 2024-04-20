@@ -41,6 +41,16 @@ public class MainActivity extends AppCompatActivity {
                 WindowHelper.hideScreenshotView();
             }
         });
+        binding.btnShowProjection.setOnClickListener(v -> {
+            if (WindowHelper.checkOverlay(this)) {
+                WindowHelper.showProjectionView();
+            }
+        });
+        binding.btnHideProjection.setOnClickListener(v -> {
+            if (WindowHelper.checkOverlay(this)) {
+                WindowHelper.hideProjectionView();
+            }
+        });
     }
 
     @Override

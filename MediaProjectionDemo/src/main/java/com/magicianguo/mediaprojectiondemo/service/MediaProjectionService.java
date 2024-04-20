@@ -12,6 +12,7 @@ import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.Surface;
 
 import androidx.annotation.Nullable;
 
@@ -37,6 +38,8 @@ public class MediaProjectionService extends Service {
     private static ImageReader mImageReader;
     @Nullable
     private static VirtualDisplay mVirtualDisplayImageReader;
+    @Nullable
+    private static VirtualDisplay mVirtualDisplayProjection;
     public static int resultCode;
     public static Intent resultData;
     private static boolean mImageAvailable = false;
@@ -50,6 +53,7 @@ public class MediaProjectionService extends Service {
         NotificationHelper.startMediaProjectionForeground(this);
         mMediaProjection = MediaProjectionHelper.getManager().getMediaProjection(resultCode, resultData);
         createImageReaderVirtualDisplay();
+        createProjectionVirtualDisplay();
     }
 
     private static void createImageReaderVirtualDisplay() {
@@ -61,6 +65,16 @@ public class MediaProjectionService extends Service {
             }, null);
             mMediaProjection.registerCallback(MEDIA_PROJECTION_CALLBACK, null);
             mVirtualDisplayImageReader = mMediaProjection.createVirtualDisplay("ImageReader", dm.widthPixels, dm.heightPixels, dm.densityDpi, Display.FLAG_ROUND, mImageReader.getSurface(), null, null);
+        }
+    }
+
+    public static void createProjectionVirtualDisplay() {
+        if (mMediaProjection != null) {
+            DisplayMetrics dm = WindowHelper.getRealMetrics();
+            if (mVirtualDisplayProjection != null) {
+                mVirtualDisplayProjection.release();
+            }
+            mVirtualDisplayProjection = mMediaProjection.createVirtualDisplay("Projection", dm.widthPixels, dm.heightPixels, dm.densityDpi, Display.FLAG_ROUND, WindowHelper.getProjectionSurface(), null, null);
         }
     }
 
@@ -135,6 +149,10 @@ public class MediaProjectionService extends Service {
         if (mVirtualDisplayImageReader != null) {
             mVirtualDisplayImageReader.release();
             mVirtualDisplayImageReader = null;
+        }
+        if (mVirtualDisplayProjection != null) {
+            mVirtualDisplayProjection.release();
+            mVirtualDisplayProjection = null;
         }
         if (mImageReader != null) {
             mImageReader.close();
