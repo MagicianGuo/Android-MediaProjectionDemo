@@ -2,7 +2,6 @@ package com.magicianguo.mediaprojectiondemo.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.RadioGroup;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -61,6 +60,16 @@ public class MainActivity extends AppCompatActivity {
                 MediaProjectionService.serviceType = ServiceType.SCREENSHOT;
             } else if (checkedId == R.id.rb_projection) {
                 MediaProjectionService.serviceType = ServiceType.PROJECTION;
+            }
+        });
+        binding.rgProjectionScale.check(R.id.rb_scale_2);
+        binding.rgProjectionScale.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.rb_scale_1) {
+                WindowHelper.projectionViewScale = 1 / 2F;
+            } else if (checkedId == R.id.rb_scale_2) {
+                WindowHelper.projectionViewScale = 1 / 3F;
+            } else if (checkedId == R.id.rb_scale_3) {
+                WindowHelper.projectionViewScale = 1 / 4F;
             }
         });
     }

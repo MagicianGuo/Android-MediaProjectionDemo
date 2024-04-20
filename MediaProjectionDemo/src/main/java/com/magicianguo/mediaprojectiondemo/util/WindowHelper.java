@@ -26,7 +26,7 @@ public class WindowHelper {
     private static boolean mScreenshotViewShowing = false;
     private static boolean mProjectionViewShowing = false;
 
-    private static int mProjectionViewScale = 3;
+    public static float projectionViewScale = 1 / 3F;
 
     static {
         SCREENSHOT_VIEW.setLayoutListener((x, y) -> {
@@ -62,8 +62,8 @@ public class WindowHelper {
             return;
         }
         DisplayMetrics realMetrics = getRealMetrics();
-        PROJECTION_VIEW_PARAMS.width = realMetrics.widthPixels / mProjectionViewScale;
-        PROJECTION_VIEW_PARAMS.height = realMetrics.heightPixels / mProjectionViewScale;
+        PROJECTION_VIEW_PARAMS.width = (int) (realMetrics.widthPixels * projectionViewScale);
+        PROJECTION_VIEW_PARAMS.height = (int) (realMetrics.heightPixels * projectionViewScale);
         WINDOW_MANAGER.addView(PROJECTION_VIEW, PROJECTION_VIEW_PARAMS);
         mProjectionViewShowing = true;
     }
