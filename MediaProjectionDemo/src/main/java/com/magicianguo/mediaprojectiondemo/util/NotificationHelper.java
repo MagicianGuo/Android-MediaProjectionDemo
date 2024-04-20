@@ -50,10 +50,10 @@ public class NotificationHelper {
         }
     }
 
-    public static void startMediaProjectionForeground(Service service) {
+    public static void startMediaProjectionForeground(Service service, String name) {
         Notification.Builder notificationBuilder = new Notification.Builder(service)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("屏幕录制已启动");
+                .setContentTitle(name+"服务已启动");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID_MEDIA_PROJECTION, CHANNEL_NAME_MEDIA_PROJECTION, NotificationManager.IMPORTANCE_HIGH);
             NOTIFICATION_MANAGER.createNotificationChannel(channel);

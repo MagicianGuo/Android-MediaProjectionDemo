@@ -32,6 +32,35 @@
         style="@style/Item">
         <TextView
             style="@style/ItemTitle"
+            android:text="屏幕录制服务类型" />
+        <RadioGroup
+            android:id="@+id/rg_service_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true">
+            <RadioButton
+                android:id="@+id/rb_screenshot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/btn_stop"
+                android:text="截图" />
+            <RadioButton
+                android:id="@+id/rb_projection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:text="投影" />
+        </RadioGroup>
+    </RelativeLayout>
+
+    <RelativeLayout
+        style="@style/Item">
+        <TextView
+            style="@style/ItemTitle"
             android:text="截图弹窗" />
         <Button
             android:id="@+id/btn_show_screenshot"

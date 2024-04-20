@@ -17,13 +17,14 @@ import androidx.annotation.Nullable;
 import com.magicianguo.mediaprojectiondemo.R;
 import com.magicianguo.mediaprojectiondemo.databinding.LayoutProjectionViewBinding;
 import com.magicianguo.mediaprojectiondemo.service.MediaProjectionService;
-import com.magicianguo.mediaprojectiondemo.util.TaskPool;
 import com.magicianguo.mediaprojectiondemo.util.WindowHelper;
 
 public class ProjectionView extends FrameLayout {
     private LayoutProjectionViewBinding binding;
     @Nullable
     private ScreenshotView.ILayoutListener mListener;
+
+    private static boolean isSurfaceCreated = false;
 
     public ProjectionView(@NonNull Context context) {
         super(context);
@@ -47,6 +48,7 @@ public class ProjectionView extends FrameLayout {
         binding.surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(@NonNull SurfaceHolder holder) {
+                isSurfaceCreated = true;
                 MediaProjectionService.createProjectionVirtualDisplay();
             }
 
@@ -57,7 +59,7 @@ public class ProjectionView extends FrameLayout {
 
             @Override
             public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-
+                isSurfaceCreated = false;
             }
         });
         DisplayMetrics realMetrics = WindowHelper.getRealMetrics();
@@ -82,6 +84,10 @@ public class ProjectionView extends FrameLayout {
                 return true;
             }
         });
+    }
+
+    public static boolean isSurfaceCreated() {
+        return isSurfaceCreated;
     }
 
     public Surface getSurface() {

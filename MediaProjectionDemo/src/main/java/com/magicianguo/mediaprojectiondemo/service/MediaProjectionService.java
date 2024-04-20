@@ -12,15 +12,16 @@ import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
-import android.view.Surface;
 
 import androidx.annotation.Nullable;
 
 import com.magicianguo.mediaprojectiondemo.App;
+import com.magicianguo.mediaprojectiondemo.constant.ServiceType;
 import com.magicianguo.mediaprojectiondemo.util.MediaProjectionHelper;
 import com.magicianguo.mediaprojectiondemo.util.NotificationHelper;
 import com.magicianguo.mediaprojectiondemo.util.ToastUtils;
 import com.magicianguo.mediaprojectiondemo.util.WindowHelper;
+import com.magicianguo.mediaprojectiondemo.view.ProjectionView;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -43,6 +44,7 @@ public class MediaProjectionService extends Service {
     public static int resultCode;
     public static Intent resultData;
     private static boolean mImageAvailable = false;
+    public static int serviceType = ServiceType.SCREENSHOT;
 
     private static final MediaProjection.Callback MEDIA_PROJECTION_CALLBACK = new MediaProjection.Callback() {
     };
@@ -50,10 +52,15 @@ public class MediaProjectionService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        NotificationHelper.startMediaProjectionForeground(this);
-        mMediaProjection = MediaProjectionHelper.getManager().getMediaProjection(resultCode, resultData);
-        createImageReaderVirtualDisplay();
-        createProjectionVirtualDisplay();
+        if (serviceType == ServiceType.SCREENSHOT) {
+            NotificationHelper.startMediaProjectionForeground(this, "截图");
+            mMediaProjection = MediaProjectionHelper.getManager().getMediaProjection(resultCode, resultData);
+            createImageReaderVirtualDisplay();
+        } else if (serviceType == ServiceType.PROJECTION) {
+            NotificationHelper.startMediaProjectionForeground(this, "投屏");
+            mMediaProjection = MediaProjectionHelper.getManager().getMediaProjection(resultCode, resultData);
+            createProjectionVirtualDisplay();
+        }
     }
 
     private static void createImageReaderVirtualDisplay() {
@@ -69,11 +76,12 @@ public class MediaProjectionService extends Service {
     }
 
     public static void createProjectionVirtualDisplay() {
-        if (mMediaProjection != null) {
+        if (mMediaProjection != null && ProjectionView.isSurfaceCreated()) {
             DisplayMetrics dm = WindowHelper.getRealMetrics();
             if (mVirtualDisplayProjection != null) {
                 mVirtualDisplayProjection.release();
             }
+            mMediaProjection.registerCallback(MEDIA_PROJECTION_CALLBACK, null);
             mVirtualDisplayProjection = mMediaProjection.createVirtualDisplay("Projection", dm.widthPixels, dm.heightPixels, dm.densityDpi, Display.FLAG_ROUND, WindowHelper.getProjectionSurface(), null, null);
         }
     }

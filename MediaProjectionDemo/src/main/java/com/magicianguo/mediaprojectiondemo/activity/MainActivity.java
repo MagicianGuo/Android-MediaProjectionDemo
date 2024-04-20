@@ -2,11 +2,15 @@ package com.magicianguo.mediaprojectiondemo.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.RadioGroup;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.magicianguo.mediaprojectiondemo.R;
+import com.magicianguo.mediaprojectiondemo.constant.ServiceType;
 import com.magicianguo.mediaprojectiondemo.databinding.ActivityMainBinding;
+import com.magicianguo.mediaprojectiondemo.service.MediaProjectionService;
 import com.magicianguo.mediaprojectiondemo.util.MediaProjectionHelper;
 import com.magicianguo.mediaprojectiondemo.util.NotificationHelper;
 import com.magicianguo.mediaprojectiondemo.util.WindowHelper;
@@ -49,6 +53,14 @@ public class MainActivity extends AppCompatActivity {
         binding.btnHideProjection.setOnClickListener(v -> {
             if (WindowHelper.checkOverlay(this)) {
                 WindowHelper.hideProjectionView();
+            }
+        });
+        binding.rgServiceType.check(R.id.rb_screenshot);
+        binding.rgServiceType.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.rb_screenshot) {
+                MediaProjectionService.serviceType = ServiceType.SCREENSHOT;
+            } else if (checkedId == R.id.rb_projection) {
+                MediaProjectionService.serviceType = ServiceType.PROJECTION;
             }
         });
     }
