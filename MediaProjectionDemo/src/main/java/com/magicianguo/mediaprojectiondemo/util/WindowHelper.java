@@ -13,6 +13,8 @@ import android.view.Surface;
 import android.view.WindowManager;
 
 import com.magicianguo.mediaprojectiondemo.App;
+import com.magicianguo.mediaprojectiondemo.constant.ServiceType;
+import com.magicianguo.mediaprojectiondemo.service.MediaProjectionService;
 import com.magicianguo.mediaprojectiondemo.view.ProjectionView;
 import com.magicianguo.mediaprojectiondemo.view.ScreenshotView;
 
@@ -57,7 +59,7 @@ public class WindowHelper {
         mScreenshotViewShowing = false;
     }
 
-    public static void showProjectionView() {
+    public static void showProjectionView(Activity activity) {
         if (mProjectionViewShowing) {
             return;
         }
@@ -66,6 +68,10 @@ public class WindowHelper {
         PROJECTION_VIEW_PARAMS.height = (int) (realMetrics.heightPixels * projectionViewScale);
         WINDOW_MANAGER.addView(PROJECTION_VIEW, PROJECTION_VIEW_PARAMS);
         mProjectionViewShowing = true;
+        if (MediaProjectionService.serviceType == ServiceType.PROJECTION && MediaProjectionService.running) {
+            MediaProjectionHelper.stop();
+            MediaProjectionHelper.start(activity);
+        }
     }
 
     public static void hideProjectionView() {

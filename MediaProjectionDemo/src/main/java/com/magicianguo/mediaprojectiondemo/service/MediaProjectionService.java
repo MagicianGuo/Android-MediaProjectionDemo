@@ -45,6 +45,7 @@ public class MediaProjectionService extends Service {
     public static Intent resultData;
     private static boolean mImageAvailable = false;
     public static int serviceType = ServiceType.SCREENSHOT;
+    public static boolean running = false;
 
     private static final MediaProjection.Callback MEDIA_PROJECTION_CALLBACK = new MediaProjection.Callback() {
     };
@@ -61,6 +62,7 @@ public class MediaProjectionService extends Service {
             mMediaProjection = MediaProjectionHelper.getManager().getMediaProjection(resultCode, resultData);
             createProjectionVirtualDisplay();
         }
+        running = true;
     }
 
     private static void createImageReaderVirtualDisplay() {
@@ -172,6 +174,7 @@ public class MediaProjectionService extends Service {
             mMediaProjection.stop();
             mMediaProjection = null;
         }
+        running = false;
     }
 
     @Override

@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         });
         binding.btnShowProjection.setOnClickListener(v -> {
             if (WindowHelper.checkOverlay(this)) {
-                WindowHelper.showProjectionView();
+                WindowHelper.showProjectionView(this);
             }
         });
         binding.btnHideProjection.setOnClickListener(v -> {
