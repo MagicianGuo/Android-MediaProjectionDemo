@@ -17,6 +17,7 @@ import com.magicianguo.mediaprojectiondemo.constant.ServiceType;
 import com.magicianguo.mediaprojectiondemo.service.MediaProjectionService;
 import com.magicianguo.mediaprojectiondemo.view.ProjectionView;
 import com.magicianguo.mediaprojectiondemo.view.ScreenshotView;
+import com.magicianguo.mediaprojectiondemo.view.VideoRecordView;
 
 public class WindowHelper {
     private static final WindowManager WINDOW_MANAGER = (WindowManager) App.getApp().getSystemService(Context.WINDOW_SERVICE);
@@ -24,9 +25,12 @@ public class WindowHelper {
     private static final WindowManager.LayoutParams SCREENSHOT_VIEW_PARAMS = newLayoutParams();
     private static final ProjectionView PROJECTION_VIEW = new ProjectionView(App.getApp());
     private static final WindowManager.LayoutParams PROJECTION_VIEW_PARAMS = newLayoutParams();
+    private static final VideoRecordView VIDEO_RECORD_VIEW = new VideoRecordView(App.getApp());
+    private static final WindowManager.LayoutParams VIDEO_RECORD_VIEW_PARAMS = newLayoutParams();
 
     private static boolean mScreenshotViewShowing = false;
     private static boolean mProjectionViewShowing = false;
+    private static boolean mVideoRecordViewShowing = false;
 
     public static float projectionViewScale = 1 / 3F;
 
@@ -40,6 +44,11 @@ public class WindowHelper {
             PROJECTION_VIEW_PARAMS.x = x;
             PROJECTION_VIEW_PARAMS.y = y;
             WINDOW_MANAGER.updateViewLayout(PROJECTION_VIEW, PROJECTION_VIEW_PARAMS);
+        });
+        VIDEO_RECORD_VIEW.setLayoutListener((x, y) -> {
+            VIDEO_RECORD_VIEW_PARAMS.x = x;
+            VIDEO_RECORD_VIEW_PARAMS.y = y;
+            WINDOW_MANAGER.updateViewLayout(VIDEO_RECORD_VIEW, VIDEO_RECORD_VIEW_PARAMS);
         });
     }
 
@@ -80,6 +89,22 @@ public class WindowHelper {
         }
         WINDOW_MANAGER.removeView(PROJECTION_VIEW);
         mProjectionViewShowing = false;
+    }
+
+    public static void showVideoRecordView() {
+        if (mVideoRecordViewShowing) {
+            return;
+        }
+        WINDOW_MANAGER.addView(VIDEO_RECORD_VIEW, VIDEO_RECORD_VIEW_PARAMS);
+        mVideoRecordViewShowing = true;
+    }
+
+    public static void hideVideoRecordView() {
+        if (!mVideoRecordViewShowing) {
+            return;
+        }
+        WINDOW_MANAGER.removeView(VIDEO_RECORD_VIEW);
+        mVideoRecordViewShowing = false;
     }
 
     public static boolean checkOverlay(Activity activity) {

@@ -4,14 +4,17 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
+import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
 import android.media.Image;
 import android.media.ImageReader;
+import android.media.MediaRecorder;
 import android.media.projection.MediaProjection;
 import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.Surface;
 
 import androidx.annotation.Nullable;
 
@@ -41,6 +44,8 @@ public class MediaProjectionService extends Service {
     private static VirtualDisplay mVirtualDisplayImageReader;
     @Nullable
     private static VirtualDisplay mVirtualDisplayProjection;
+    @Nullable
+    private static MediaRecorder mMediaRecorder;
     public static int resultCode;
     public static Intent resultData;
     private static boolean mImageAvailable = false;
@@ -61,6 +66,10 @@ public class MediaProjectionService extends Service {
             NotificationHelper.startMediaProjectionForeground(this, "投屏");
             mMediaProjection = MediaProjectionHelper.getManager().getMediaProjection(resultCode, resultData);
             createProjectionVirtualDisplay();
+        } else if (serviceType == ServiceType.VIDEO) {
+            NotificationHelper.startMediaProjectionForeground(this, "录屏");
+            mMediaProjection = MediaProjectionHelper.getManager().getMediaProjection(resultCode, resultData);
+            createVideoVirtualDisplay();
         }
         running = true;
     }
@@ -85,6 +94,51 @@ public class MediaProjectionService extends Service {
             }
             mMediaProjection.registerCallback(MEDIA_PROJECTION_CALLBACK, null);
             mVirtualDisplayProjection = mMediaProjection.createVirtualDisplay("Projection", dm.widthPixels, dm.heightPixels, dm.densityDpi, Display.FLAG_ROUND, WindowHelper.getProjectionSurface(), null, null);
+        }
+    }
+
+    public static void createVideoVirtualDisplay() {
+        if (mMediaProjection != null) {
+            if (mMediaRecorder != null) {
+                mMediaRecorder.reset();
+                mMediaRecorder.release();
+            }
+            mMediaProjection.registerCallback(MEDIA_PROJECTION_CALLBACK, null);
+            mMediaRecorder = new MediaRecorder();
+            mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
+            mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+            mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+            mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+            mMediaRecorder.setOutputFile(App.getApp().getExternalFilesDir(null).getParent() + "/" + createVideoFileName());
+            DisplayMetrics dm = WindowHelper.getRealMetrics();
+            mMediaRecorder.setVideoSize(dm.widthPixels, dm.heightPixels);
+            mMediaRecorder.setVideoFrameRate(60);
+            // 高一些，保证清晰度
+            mMediaRecorder.setVideoEncodingBitRate(10 * 1024 * 1024);
+        }
+    }
+
+    public static void startVideoRecord() {
+        if (mMediaProjection != null && mMediaRecorder != null) {
+            try {
+                mMediaRecorder.prepare();
+                Surface surface = mMediaRecorder.getSurface();
+                DisplayMetrics dm = WindowHelper.getRealMetrics();
+                mMediaProjection.createVirtualDisplay("Video", dm.widthPixels, dm.heightPixels,
+                        dm.densityDpi, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                        surface, null, null);
+                mMediaRecorder.start();
+            } catch (IOException ignore) {
+            }
+        }
+    }
+
+    public static void stopVideoRecord() {
+        if (mMediaRecorder != null) {
+            mMediaRecorder.stop();
+            mMediaRecorder.release();
+            mMediaRecorder = null;
         }
     }
 
@@ -143,6 +197,14 @@ public class MediaProjectionService extends Service {
     }
 
     private static String createScreenshotFileName() {
+        return "Screenshot-"+getDateStr()+".png";
+    }
+
+    private static String createVideoFileName() {
+        return "Video-"+getDateStr()+".mp4";
+    }
+
+    private static String getDateStr() {
         Calendar calendar = Calendar.getInstance(Locale.CHINA);
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH) + 1;
@@ -150,7 +212,7 @@ public class MediaProjectionService extends Service {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
         int second = calendar.get(Calendar.SECOND);
-        return String.format("Screenshot-%d%02d%02d%02d%02d%02d.png", year, month, day, hour, minute, second);
+        return String.format("%d%02d%02d%02d%02d%02d", year, month, day, hour, minute, second);
     }
 
     @Override
